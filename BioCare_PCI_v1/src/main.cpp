@@ -12,11 +12,12 @@
 
 // BLE Callbacks Class - Manages retrieved data
 class MyCallbacks: public BLECharacteristicCallbacks {
-  void onWrite(BLECharacteristic *pCharacteristic) override
+
+  void onWrite(BLECharacteristic *pCharacteristic) override // onWrite : rx function for BLE communication
   {
     std::string rxValue = pCharacteristic->getValue(); // Gets string value from tx (python module)
 
-    if (rxValue.length() > 0)
+    /*if (rxValue.length() > 0)
     {
       Serial.print("Received Value: ");
       Serial.println(rxValue.c_str());
@@ -33,6 +34,14 @@ class MyCallbacks: public BLECharacteristicCallbacks {
         Serial.println("LED turned OFF");
       }
     }
+      */
+
+      if (rxValue.length() == 4) // ensuring 4-bytes for 32 bit int
+      {
+        int32_t servo_angle = *(int32_t*)rxValue.data(); // Re - interprets byte -> int
+        Serial.print("Servo position recieved: ");
+        Serial.println(servo_angle);
+      }
 
   }
 
