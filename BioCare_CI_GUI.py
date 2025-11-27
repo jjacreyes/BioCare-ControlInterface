@@ -163,16 +163,15 @@ class DashboardWindow(QMainWindow):
         right_layout.setSpacing(10)
         
 
-        # ------ 
-        details_title = QLabel("Preset Details")
+        details_title = QLabel("Preset Details - List of Gestures")
         details_title.setStyleSheet("font-size: 20px; font-weight: bold;")
         details_title.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         right_layout.addWidget(details_title)
 
-        self.details_display = QLabel("Select a preset to view details here...")
-        self.details_display.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.details_display.setWordWrap(True)
-        right_layout.addWidget(self.details_display)
+        details_display = QLabel("Gesture - Finger Positions")
+        details_display.setStyleSheet("font-size: 20px; font-weight: bold;")
+        details_display.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        right_layout.addWidget(details_display)
 
         main_layout.addWidget(left_panel, 1)
         main_layout.addWidget(right_panel, 2)
@@ -202,17 +201,47 @@ class DashboardWindow(QMainWindow):
 
     # ---------------- Live Sensor Page ----------------
     def build_live_sensor_page(self):
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(15, 15, 15, 15)
+            page = QWidget()
+            main_layout = QVBoxLayout(page)
+            main_layout.setContentsMargins(15, 15, 15, 15)
+            main_layout.setSpacing(15)
 
-        title = QLabel("Live Sensor Data")
-        title.setStyleSheet("font-size: 22px; font-weight: bold;")
-        layout.addWidget(title)
+            # Title
+            title = QLabel("Live Sensor Display")
+            title.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            title.setStyleSheet("font-size: 22px; font-weight: bold;")
+            main_layout.addWidget(title)
 
-        layout.addWidget(QLabel("Live data placeholder..."))
-        layout.addStretch()
-        return page
+            # Placeholder for live sensor data
+            self.sensor_display = QLabel("Live sensor data will appear here...")
+            self.sensor_display.setAlignment(Qt.AlignmentFlag.AlignTop)
+            self.sensor_display.setStyleSheet("""
+                background-color: #2d2d30;
+                color: #ffffff;
+                padding: 10px;
+                border-radius: 8px;
+                font-family: Segoe UI;
+            """)
+            self.sensor_display.setFixedHeight(500)
+            self.sensor_display.setWordWrap(True)
+            main_layout.addWidget(self.sensor_display)
+
+            # Buttons: Toggle notifications & Record/Export
+            btn_layout = QHBoxLayout()
+            self.btn_toggle_notifications = QPushButton("Notifications: OFF")
+            self.btn_toggle_notifications.setCheckable(True)
+            self.btn_toggle_notifications.setFixedHeight(40)
+
+            self.btn_record_export = QPushButton("Record / Export Data")
+            self.btn_record_export.setFixedHeight(40)
+
+            for btn in [self.btn_toggle_notifications, self.btn_record_export]:
+                btn_layout.addWidget(btn)
+
+            main_layout.addLayout(btn_layout)
+            main_layout.addStretch()
+
+            return page
 
     # ---------------- Settings Page ----------------
     def build_settings_page(self):
