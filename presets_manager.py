@@ -9,7 +9,6 @@ class fingerPosition:
             
     def to_list(self):
         return self.positions
-    
 
 class Gesture:
     def __init__(self, name: str):
@@ -29,7 +28,6 @@ class Gesture:
         return {
             "name": self.name,
             "keyframes": [kf.to_list() for kf in self.keyframes]
-
         }
     
 class Presets:
@@ -102,48 +100,57 @@ class PresetManager:
             self.presets[name] = preset
 
 
-def CLI_createPreset():
-    print("\n ==== Create a New Preset ====")
-    preset_name = input("What would you like to call this preset? ")
-
-    preset = Presets(preset_name)
+def CLI():
     pm = PresetManager()
 
     while True:
-        if len(preset.gestures) >= Presets.MAX_GESTURES:
-            print("\n Max number of gestures reached. ")
-            break
-
-        gesture_name = input("\nPlease enter a gesture name (or type done if you no longer want to upload a new gesture):   ")
-        if gesture_name.lower() == "done":
-            break
-
-        gesture = Gesture(gesture_name)
-
-        # Add keyframes / Finger Positions
-        fingerPos_lst = [180, 180, 180, 180, 180] # Default 180 for all (Open Hand) 
-        for fingers in range(0, 5): # Prompts 5 Finger positions, based on following index: 0 - Thumb, 1 - Index, 2 - Middle, 3 - Ring, 4 - Pinky
-            fingerPos = int(input(f"Motor Position for Finger {fingers} : "))
-            fingerPos_lst[fingers] = fingerPos
-            
-        gesture.add_keyframe(fingerPosition(fingerPos_lst))
-        preset.add_gesture(gesture)
+        print("=============================")
+        print("Welcome to BioCare's Preset Manager...")
+        print("What would you like to do? Type 1, 2, or 3....")
+        cmd = int(input((" 1. Create a New Preset \n 2. View Existing Presets \n 3. Upload Presets \n 4. Exit \n")))
         
-    
 
-    save = int(input("Would you like to save this Preset? 1 - Yes | 2 - No "))
-    if (save == 1):
-        pm.presets[preset_name] = preset
-        pm.save_to_file("presets.json")
+        # =============== Option 1 : Create a New Preset ===================
+        if cmd == 1:          
+            # Prompt Presets
+            print("\n ==== Create a New Preset ====")
+            preset_name = input("What would you like to call this preset? ")
+            preset = Presets(preset_name)
 
-    
-    return preset
+            while ( len(preset.gestures) < Presets.MAX_GESTURES) :
+                gesture_name = input("\nPlease enter a gesture name (or type done if you no longer want to upload a new gesture):   ")
+                if gesture_name.lower() == "done":
+                    break
+
+                gesture = Gesture(gesture_name)
+
+                # Add keyframes / Finger Positions
+                fingerPos_lst = [180, 180, 180, 180, 180] # Default 180 for all (Open Hand) 
+                for fingers in range(0, 5): # Prompts 5 Finger positions, based on following index: 0 - Thumb, 1 - Index, 2 - Middle, 3 - Ring, 4 - Pinky
+                    fingerPos = int(input(f"Motor Position for Finger {fingers} : "))
+                    fingerPos_lst[fingers] = fingerPos
+                    
+                gesture.add_keyframe(fingerPosition(fingerPos_lst))
+                preset.add_gesture(gesture)
+            
+            save = int(input("Would you like to save this Preset? 1 - Yes | 2 - No "))
+            if (save == 1):
+                pm.presets[preset_name] = preset
+                pm.save_to_file("presets.json")
+
+            return preset
+
+        ## Search Up Existing Preset
+        elif cmd == 2:
+            preset_target = input("What Preset would you like to lookup? ")
+            found = pm.get_preset(preset_target)
+            if (found == None):
+                print(f"Sorry, there is no Preset by the name {preset_target}")
+            
+            else:
+                print(found)
+            
+            
 
 
-cmd = int(input("Would you like to create a new gesture? 1 - Yes | 2 - No :  "))
-
-if (cmd == 1):
-    CLI_createPreset()
-else:
-    print("Wah Wah Wah")
-
+CLI()
