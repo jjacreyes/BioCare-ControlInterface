@@ -70,11 +70,26 @@ class PresetManager:
         return preset
     
     def get_preset(self, name: str):
-        return self.presets.get(name)
+
+        with open("presets.json", "r") as file:
+            data = json.load(file)
+
+        return data.get(name)
     
     def delete_preset(self, name: str):
-        if name in self.presets:
-            del self.presets[name]
+
+        with open("presets.json", "r") as file:
+            data = json.load(file)
+
+        if name in data:
+            del data[name]
+            print(f"Preset {name} deleted successfully")
+        else:
+            print(f"ERROR: Preset {name} not found...")
+
+
+        with open("presets.json", "w") as file: # Saves update JSON
+            json.dump(data, file, indent=4)
 
     def save_to_file(self, filepath: str):
         data = {
@@ -107,7 +122,7 @@ def CLI():
         print("=============================")
         print("Welcome to BioCare's Preset Manager...")
         print("What would you like to do? Type 1, 2, or 3....")
-        cmd = int(input((" 1. Create a New Preset \n 2. View Existing Presets \n 3. Upload Presets \n 4. Exit \n")))
+        cmd = int(input((" 1. Create a New Preset \n 2. View Existing Presets \n 3. Upload Presets \n 4. Delete a Preset \n 5. Exit \n")))
         
 
         # =============== Option 1 : Create a New Preset ===================
@@ -138,8 +153,6 @@ def CLI():
                 pm.presets[preset_name] = preset
                 pm.save_to_file("presets.json")
 
-            return preset
-
         ## Search Up Existing Preset
         elif cmd == 2:
             preset_target = input("What Preset would you like to lookup? ")
@@ -148,9 +161,22 @@ def CLI():
                 print(f"Sorry, there is no Preset by the name {preset_target}")
             
             else:
-                print(found)
-            
-            
+                print(json.dumps(found))
 
+                print(f"Data for the Preset {found["name"]}")
+                gesture_data = found["gestures"]
 
+                i = 0
+                for gesture_name, gesture_info in gesture_data.items():
+                    print(f"Gesture {i}: {gesture_name}")
+                    print(f"\t Finger Positions: {gesture_info['keyframes']}")
+                    i += 1
+
+        elif cmd == 4:
+            preset_target = input("What Preset would you like to delete? ")
+            pm.delete_preset(preset_target)
+        
+        elif cmd == 5:
+            break
+            
 CLI()
