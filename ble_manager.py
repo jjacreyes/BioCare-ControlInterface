@@ -22,7 +22,7 @@ async def main():
         return
 
     print(f"Device Found: {esp32.name} ({esp32.address})")
-
+    
     async with BleakClient(esp32.address) as client:
         print("Connected to ESP32")
 
